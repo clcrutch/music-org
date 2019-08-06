@@ -13,4 +13,4 @@ RUN pip install eyed3 ffmpeg-python lyricsgenius musicbrainzngs pyacoustid pymss
 # App
 COPY . /app
 WORKDIR "/app"
-CMD python __init__.py
+CMD python __main__.py
