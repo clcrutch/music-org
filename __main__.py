@@ -2,13 +2,15 @@ import os
 import pymssql
 import time
 
-from Base import Base
 from os import path
 
 from sqlalchemy import create_engine
 
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
+
+from orm.Music import Music
+from orm.Base import Base
 
 from steps.ConvertToMp3 import ConvertToMp3Step
 from steps.Fingerprint import FingerprintStep
