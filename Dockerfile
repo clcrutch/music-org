@@ -11,7 +11,7 @@ RUN curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list | tee /etc
 
 # Install
 RUN apt-get update
-RUN apt-get install ffmpeg libchromaprint-tools mssql-tools unixodbc-dev -y
+RUN ACCEPT_EULA=Y apt-get install ffmpeg libchromaprint-tools mssql-tools unixodbc-dev -y
 
 # Python dependencies
 RUN pip install eyed3 ffmpeg-python lyricsgenius musicbrainzngs pyacoustid pyodbc pymssql sqlalchemy watchdog
