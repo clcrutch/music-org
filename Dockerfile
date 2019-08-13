@@ -6,8 +6,8 @@ RUN dpkg -i deb-multimedia-keyring_2016.8.1_all.deb
 RUN echo "deb http://www.deb-multimedia.org buster main non-free" >> /etc/apt/sources.list
 
 # SQL Dependencies
-RUN curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-RUN curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list | sudo tee /etc/apt/sources.list.d/msprod.list
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+RUN curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list | tee /etc/apt/sources.list.d/msprod.list
 
 # Install
 RUN apt-get update
