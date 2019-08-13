@@ -2,7 +2,10 @@ import os
 import pymssql
 import time
 
+from Base import Base
 from os import path
+
+from sqlalchemy import create_engine
 
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
@@ -15,8 +18,9 @@ from steps.UpdateTags import UpdateTagsStep
 from steps.Lyrics import LyricsStep
 from steps.MoveFile import MoveFileStep
 
-plugins = []
 conn: pymssql.Connection = None
+eng = None
+plugins = []
 
 class WatchdogHandler(FileSystemEventHandler):
     def on_created(self, event):
@@ -60,8 +64,14 @@ def get_files(directory):
     return result
 
 def main():
-    global plugins
     global conn
+    global eng
+    global plugins
+
+    eng = create_engine(os.environ['DATABASE_CONNECTION_STRING'])
+
+    Base.metadata.bind = eng        
+    Base.metadata.create_all()   
 
     # Get secrets from env variables
     server = os.environ['DATABASE_HOST_NAME']

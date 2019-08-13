@@ -8,7 +8,7 @@ RUN apt-get update
 RUN apt-get install ffmpeg libchromaprint-tools -y
 
 # Python dependencies
-RUN pip install eyed3 ffmpeg-python lyricsgenius musicbrainzngs pyacoustid pymssql watchdog
+RUN pip install eyed3 ffmpeg-python lyricsgenius musicbrainzngs pyacoustid pyodbc pymssql sqlalchemy watchdog
 
 # App
 COPY . /app
