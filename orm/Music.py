@@ -3,7 +3,7 @@ from orm.Base import Base
 from sqlalchemy import Column, Integer, NVARCHAR, FLOAT, VARBINARY
 
 class Music(Base):
-    __tablename__ = "Music"
+    __tablename__ = 'Music'
 
     id = Column(Integer, primary_key=True, name='ID')
     file_path = Column(NVARCHAR, name='FilePath')

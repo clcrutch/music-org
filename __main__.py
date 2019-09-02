@@ -4,12 +4,20 @@ import time
 
 from os import path
 
+import sqlalchemy
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 from orm.Music import Music
+from orm.Album import Album
+from orm.Artist import Artist
+from orm.ArtistMusicMapItem import ArtistMusicMapItem
+from orm.PossibleMatch import PossibleMatch
+from orm.OriginalFile import OriginalFile
+from orm.Step import Step
 from orm.Base import Base
 
 from steps.ConvertToMp3 import ConvertToMp3Step
@@ -28,11 +36,17 @@ class WatchdogHandler(FileSystemEventHandler):
     def on_created(self, event):
         execute(event.src_path, conn)
 
-def write_step(file_name: str, step_name: str, conn: pymssql.Connection):
+def write_step(file_name: str, step_name: str, eng: sqlalchemy.engine.Engine, conn: pymssql.Connection):
     cursor: pymssql.Cursor = conn.cursor()
     cursor.execute(
         'EXEC sp_InsertLastStep %s, %s', (file_name, step_name))
     cursor.close()
+
+    DBSession = sessionmaker()
+    DBSession.bind = eng
+    session  = DBSession()
+
+    
 
 def get_last_step(file_name: str, conn: pymssql.Connection) -> str:
     # Get all of the steps
@@ -70,10 +84,10 @@ def main():
     global eng
     global plugins
 
-    eng = create_engine(os.environ['DATABASE_CONNECTION_STRING'])
+    eng: sqlalchemy.engine.Engine = create_engine(os.environ['DATABASE_CONNECTION_STRING'])
 
-    Base.metadata.bind = eng        
-    Base.metadata.create_all()   
+    Base.metadata.bind = eng   
+    Base.metadata.create_all()
 
     # Get secrets from env variables
     server = os.environ['DATABASE_HOST_NAME']
@@ -138,7 +152,7 @@ def execute(file: str, conn: pymssql.Connection):
         # Break if the previous step indicated we should stop.
         if should_continue:
             # Write the log of the step
-            write_step(file, plugin.step_name, conn)
+            write_step(file, plugin.step_name, eng, conn)
         else:
             break
 
