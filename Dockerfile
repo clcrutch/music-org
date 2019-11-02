@@ -1,4 +1,6 @@
-FROM python:latest
+FROM python:3.6
+COPY . /app
+WORKDIR "/app"
 
 # Chromaprint dependencies
 RUN wget https://www.deb-multimedia.org/pool/main/d/deb-multimedia-keyring/deb-multimedia-keyring_2016.8.1_all.deb
@@ -14,9 +16,8 @@ RUN apt-get update
 RUN ACCEPT_EULA=Y apt-get install ffmpeg libchromaprint-tools mssql-tools unixodbc-dev -y
 
 # Python dependencies
-RUN pip install eyed3 ffmpeg-python lyricsgenius musicbrainzngs pyacoustid pyodbc pymssql sqlalchemy watchdog
+RUN pip install pipenv
+RUN pipenv --python /usr/local/bin/python install
 
 # App
-COPY . /app
-WORKDIR "/app"
-CMD python __main__.py
+CMD pipenv --python /usr/local/bin/python run __main__.py
