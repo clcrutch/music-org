@@ -1,4 +1,7 @@
 #addin nuget:?package=Cake.Docker&version=0.10.1
+#addin nuget:?package=Cake.GitVersioning&version=3.0.26
+
+using Nerdbank.GitVersioning;
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
 //////////////////////////////////////////////////////////////////////
@@ -9,17 +12,29 @@ var target = Argument("target", "Default");
 // PREPARATION
 //////////////////////////////////////////////////////////////////////
 
+VersionOracle versionOracle;
+
 //////////////////////////////////////////////////////////////////////
 // TASKS
 //////////////////////////////////////////////////////////////////////
 
+Task("Get-Version")
+    .Does(() =>
+{
+    versionOracle = GitVersioningGetVersion();
+
+    Information(versionOracle.SemVer2);
+});
+
 Task("Build-Docker-Container")
+    .IsDependentOn("Get-Version")
     .Does(() =>
 {
     var settings = new DockerImageBuildSettings
     {
         Tag = new string[]
         {
+            versionOracle.SemVer2,
             "latest"
         }
     };
