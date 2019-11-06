@@ -1,0 +1,13 @@
+{
+    "$schema": "NerdBank.GitVersioning/version.schema.json",
+    "version": "0.0",
+    "publicReleaseRefSpec": [
+      "^refs/heads/master$"
+    ],
+    "cloudBuild": {
+        "setVersionVariables": true,
+        "buildNumber": {
+          "enabled": true
+        }
+    }
+  }
