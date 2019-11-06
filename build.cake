@@ -40,12 +40,19 @@ Task("Build-Docker-Container")
     {
         Tag = new string[]
         {
-            versionOracle.SemVer2,
-            "latest"
+            $"music-org:{versionOracle.SemVer2}",
+            "music-org:latest"
         }
     };
 
     DockerBuild(settings, ".");
+});
+
+Task("Push-Docker-Container")
+    .IsDependentOn("Build-Docker-Container")
+    .Does(() =>
+{
+    DockerPush($"music-org:{versionOracle.SemVer2}");
 });
 
 //////////////////////////////////////////////////////////////////////
@@ -53,7 +60,7 @@ Task("Build-Docker-Container")
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
-    .IsDependentOn("Build-Docker-Container");
+    .IsDependentOn("Push-Docker-Container");
 
 //////////////////////////////////////////////////////////////////////
 // EXECUTION
