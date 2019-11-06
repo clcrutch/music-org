@@ -23,6 +23,14 @@ Task("Get-Version")
 {
     versionOracle = GitVersioningGetVersion();
 
+    StartProcess("appveyor", new ProcessSettings {
+        Arguments = new ProcessArgumentBuilder()
+            .Append("UpdateBuild")
+            .Append("-Version")
+            .Append(versionOracle.SemVer2)
+        }
+    );
+
     Information(versionOracle.SemVer2);
 });
 
