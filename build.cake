@@ -40,8 +40,8 @@ Task("Build-Docker-Container")
     {
         Tag = new string[]
         {
-            $"music-org:{versionOracle.SemVer2}",
-            "music-org:latest"
+            $"clcrutch/music-org:{versionOracle.SemVer2}",
+            "clcrutch/music-org:latest"
         }
     };
 
@@ -52,7 +52,7 @@ Task("Push-Docker-Container")
     .IsDependentOn("Build-Docker-Container")
     .Does(() =>
 {
-    DockerPush($"music-org:{versionOracle.SemVer2}");
+    DockerPush($"clcrutch/music-org:{versionOracle.SemVer2}");
 });
 
 //////////////////////////////////////////////////////////////////////
