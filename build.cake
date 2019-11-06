@@ -30,8 +30,6 @@ Task("Get-Version")
             .Append(versionOracle.SemVer2)
         }
     );
-
-    Information(versionOracle.SemVer2);
 });
 
 Task("Build-Docker-Container")
