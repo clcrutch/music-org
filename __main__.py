@@ -84,7 +84,7 @@ def main():
     global eng
     global plugins
 
-    eng: sqlalchemy.engine.Engine = create_engine(os.environ['DATABASE_CONNECTION_STRING'])
+    eng = create_engine(os.environ['DATABASE_CONNECTION_STRING'])
 
     Base.metadata.bind = eng   
     Base.metadata.create_all()
