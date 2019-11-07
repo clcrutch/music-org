@@ -53,6 +53,7 @@ Task("Push-Docker-Container")
     .Does(() =>
 {
     DockerPush($"clcrutch/music-org:{versionOracle.SemVer2}");
+    DockerPush("clcrutch/music-org:latest");
 });
 
 //////////////////////////////////////////////////////////////////////
