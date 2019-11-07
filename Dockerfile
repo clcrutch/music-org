@@ -20,4 +20,4 @@ RUN pip install pipenv
 RUN pipenv --python /usr/local/bin/python install
 
 # App
-CMD pipenv --python /usr/local/bin/python run __main__.py
+CMD pipenv --python /usr/local/bin/python run /app/__main__.py
