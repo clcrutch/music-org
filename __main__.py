@@ -5,8 +5,8 @@ import time
 from os import path
 
 import sqlalchemy
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine, desc
+from sqlalchemy.orm import sessionmaker, Session, Query
 
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
@@ -29,39 +29,27 @@ from steps.Lyrics import LyricsStep
 from steps.MoveFile import MoveFileStep
 
 conn: pymssql.Connection = None
-eng = None
 plugins = []
 
 class WatchdogHandler(FileSystemEventHandler):
     def on_created(self, event):
         execute(event.src_path, conn)
 
-def write_step(file_name: str, step_name: str, eng: sqlalchemy.engine.Engine, conn: pymssql.Connection):
-    cursor: pymssql.Cursor = conn.cursor()
-    cursor.execute(
-        'EXEC sp_InsertLastStep %s, %s', (file_name, step_name))
-    cursor.close()
+def write_step(file_name: str, step_name: str, db_session: sessionmaker):
+    session: Session = db_session()
 
-    DBSession = sessionmaker()
-    DBSession.bind = eng
-    session  = DBSession()
+    session.add(Step(file_name=file_name, step_name=step_name))
+    session.commit()
 
-    
-
-def get_last_step(file_name: str, conn: pymssql.Connection) -> str:
-    # Get all of the steps
-    cursor: pymssql.Cursor = conn.cursor()
-    cursor.execute(
-        'EXEC sp_SelectSteps %s', (file_name)
-    )
+def get_last_step(file_name: str, db_session: sessionmaker) -> str:
+    session: Session = db_session()
     # We only care about the most recent one.
-    row = cursor.fetchone()
-    cursor.close()
+    step: Step = session.query(Step).order_by(desc(Step.id)).one_or_none()
 
-    if row is None:
+    if step is None:
         return None
     else:
-        return row[0]
+        return step.step_name
 
 def get_files(directory):
     # Get all the files and directories in the specified folder.
@@ -81,11 +69,12 @@ def get_files(directory):
 
 def main():
     global conn
-    global eng
     global plugins
 
     eng = create_engine(os.environ['DATABASE_CONNECTION_STRING'])
+    db_session = sessionmaker(bind=eng)
 
+    # Create the database
     Base.metadata.bind = eng   
     Base.metadata.create_all()
 
@@ -132,7 +121,7 @@ def main():
     # Clean-up SQL connection.
     conn.close()
 
-def execute(file: str, conn: pymssql.Connection):
+def execute(file: str, db_session: sessionmaker, conn: pymssql.Connection):
     global plugins
 
     # Get the last step executed for the current file,
@@ -147,12 +136,12 @@ def execute(file: str, conn: pymssql.Connection):
 
     for plugin in file_plugins:
         # Update the file name.
-        file, should_continue = plugin.execute(file, conn)
+        file, should_continue = plugin.execute(file, db_session)
 
         # Break if the previous step indicated we should stop.
         if should_continue:
             # Write the log of the step
-            write_step(file, plugin.step_name, eng, conn)
+            write_step(file, plugin.step_name, db_session)
         else:
             break
 
