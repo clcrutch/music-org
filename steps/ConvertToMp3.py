@@ -5,12 +5,13 @@ import shutil
 import time
 
 from os import path
+from sqlalchemy.orm import sessionmaker, Session
 
 class ConvertToMp3Step:
     priority = 20
     step_name = 'ConvertToMp3'
 
-    def handle_duplicate_files(self, file_name: str) -> str:
+    def handle_duplicate_files(self, db_session: sessionmaker, file_name: str) -> str:
         # Figure out where we should move the file.
         name = path.basename(file_name)
         duplicate_name = './shares/duplicate-music/' + name

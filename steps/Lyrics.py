@@ -2,11 +2,13 @@ import lyricsgenius
 import os
 import pymssql
 
+from sqlalchemy.orm import sessionmaker, Session
+
 class LyricsStep:
     priority = 60
     step_name = 'Lyrics'
 
-    def execute(self, file_name: str, conn: pymssql.Connection) -> (str, bool):
+    def execute(self, file_name: str, db_session: sessionmaker, conn: pymssql.Connection) -> (str, bool):
         # Get the secrets from the environment
         api_key = os.environ['LYRIC_GENIUS_API_KEY'] 
         

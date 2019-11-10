@@ -1,11 +1,13 @@
 import eyed3
 import pymssql
 
+from sqlalchemy.orm import sessionmaker, Session
+
 class UpdateTagsStep:
     priority = 50
     step_name = 'UpdateTags'
 
-    def execute(self, file_name: str, conn: pymssql.Connection) -> (str, bool):
+    def execute(self, file_name: str, db_session: sessionmaker, conn: pymssql.Connection) -> (str, bool):
         eyed3.log.setLevel("ERROR")
 
         # Load the file to edit tags

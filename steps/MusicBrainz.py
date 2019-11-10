@@ -2,11 +2,13 @@ import itertools
 import musicbrainzngs
 import pymssql
 
+from sqlalchemy.orm import sessionmaker, Session
+
 class MusicBrainzStep:
     priority = 40
     step_name = 'MusicBrainz'
 
-    def execute(self, file_name: str, conn: pymssql.Connection) -> (str, bool):
+    def execute(self, file_name: str, db_session: sessionmaker, conn: pymssql.Connection) -> (str, bool):
         musicbrainzngs.set_useragent('music-org', '0.1')
 
         cursor: pymssql.Cursor = conn.cursor()

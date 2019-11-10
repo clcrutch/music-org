@@ -108,7 +108,7 @@ def main():
     # Organize the files that are already in the music upload folder.
     files = get_files(path)
     for file in files:
-        execute(file, conn)
+        execute(file, db_session, conn)
 
     # Spin-lock for file system watcher.
     try:
@@ -127,7 +127,7 @@ def execute(file: str, db_session: sessionmaker, conn: pymssql.Connection):
     # Get the last step executed for the current file,
     # this allows us to continue from where we left off.
     file_plugins = plugins
-    last_step = get_last_step(file, conn)
+    last_step = get_last_step(file, db_session)
 
     # Remove the steps we've already executed.
     if last_step is not None:
@@ -136,7 +136,7 @@ def execute(file: str, db_session: sessionmaker, conn: pymssql.Connection):
 
     for plugin in file_plugins:
         # Update the file name.
-        file, should_continue = plugin.execute(file, db_session)
+        file, should_continue = plugin.execute(file, db_session, conn)
 
         # Break if the previous step indicated we should stop.
         if should_continue:

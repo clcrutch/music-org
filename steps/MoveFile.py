@@ -2,12 +2,13 @@ import os
 import pymssql
 
 from os import path
+from sqlalchemy.orm import sessionmaker, Session
 
 class MoveFileStep:
     priority = 70
     step_name = 'MoveFile'
 
-    def execute(self, file_name: str, conn: pymssql.Connection) -> (str, bool):
+    def execute(self, file_name: str, db_session: sessionmaker, conn: pymssql.Connection) -> (str, bool):
         # Get the folder we are moving the music to.
         base_folder = './shares/music'
 

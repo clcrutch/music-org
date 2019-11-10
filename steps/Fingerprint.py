@@ -3,12 +3,13 @@ import os
 import pymssql
 
 from os import path
+from sqlalchemy.orm import sessionmaker, Session
 
 class FingerprintStep:
     priority = 10
     step_name = 'Fingerprint'
 
-    def execute(self, file_name: str, conn: pymssql.Connection) -> (str, bool):
+    def execute(self, file_name: str, db_session: sessionmaker, conn: pymssql.Connection) -> (str, bool):
         # List of possible audio formats.
         audio_formats = [
             'mp3',

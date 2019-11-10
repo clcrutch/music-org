@@ -2,11 +2,13 @@ import acoustid
 import os
 import pymssql
 
+from sqlalchemy.orm import sessionmaker, Session
+
 class AcoustidStep:
     priority = 30
     step_name = 'Acoustid'
 
-    def execute(self, file_name: str, conn: pymssql.Connection) -> (str, bool):
+    def execute(self, file_name: str, db_session: sessionmaker, conn: pymssql.Connection) -> (str, bool):
         # Get the secrets from environment.
         api_key = os.environ['ACOUSTID_API_KEY']
 
